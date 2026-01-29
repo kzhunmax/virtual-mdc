@@ -102,34 +102,12 @@ public final class VirtualThreadExecutors {
         // Wrap logic
         private Runnable wrap(Runnable task) {
             Map<String, String> snapshot = VirtualMDC.getCopyOfContextMap();
-            return () -> {
-                Map<String, String> previous = VirtualMDC.getCopyOfContextMap();
-                try {
-                    VirtualMDC.setContextMap(snapshot);
-                    task.run();
-                } finally {
-                    VirtualMDC.setContextMap(previous);
-                    if (Thread.currentThread().isVirtual()) {
-                        VirtualMDC.clearThreadLocal();
-                    }
-                }
-            };
+            return () -> VirtualMDC.executeWithContext(task, snapshot);
         }
 
         private <T> Callable<T> wrap(Callable<T> task) {
             Map<String, String> snapshot = VirtualMDC.getCopyOfContextMap();
-            return () -> {
-                Map<String, String> previous = VirtualMDC.getCopyOfContextMap();
-                try {
-                    VirtualMDC.setContextMap(snapshot);
-                    return task.call();
-                } finally {
-                    VirtualMDC.setContextMap(previous);
-                    if (Thread.currentThread().isVirtual()) {
-                        VirtualMDC.clearThreadLocal();
-                    }
-                }
-            };
+            return () -> VirtualMDC.executeWithContext(task, snapshot);
         }
     }
 }

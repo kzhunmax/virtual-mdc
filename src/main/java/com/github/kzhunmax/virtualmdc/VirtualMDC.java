@@ -3,6 +3,8 @@ package com.github.kzhunmax.virtualmdc;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 
 /**
@@ -89,6 +91,48 @@ public final class VirtualMDC {
      */
     public static void clearThreadLocal() {
         CONTEXT.remove();
+    }
+
+    /**
+     * Executes a task with the given context snapshot (internal for wrappers).
+     */
+    public static void executeWithContext(Runnable task, Map<String, String> snapshot) {
+        Map<String, String> previous = getCopyOfContextMap();
+        try {
+            setContextMap(snapshot);
+            task.run();
+        } finally {
+            setContextMap(previous);
+            if (Thread.currentThread().isVirtual()) {
+                clearThreadLocal();
+            }
+        }
+    }
+
+    public static <T> T executeWithContext(Supplier<T> task, Map<String, String> snapshot) {
+        Map<String, String> previous = getCopyOfContextMap();
+        try {
+            setContextMap(snapshot);
+            return task.get();
+        } finally {
+            setContextMap(previous);
+            if (Thread.currentThread().isVirtual()) {
+                clearThreadLocal();
+            }
+        }
+    }
+
+    public static <T> T executeWithContext(Callable<T> task, Map<String, String> snapshot) throws Exception {
+        Map<String, String> previous = getCopyOfContextMap();
+        try {
+            setContextMap(snapshot);
+            return task.call();
+        } finally {
+            setContextMap(previous);
+            if (Thread.currentThread().isVirtual()) {
+                clearThreadLocal();
+            }
+        }
     }
 
 }
