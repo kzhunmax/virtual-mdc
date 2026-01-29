@@ -72,16 +72,23 @@ public final class VirtualMDC {
         }
     }
 
-    // Additional helper methods for internal use (in wrappers)
-    static void setContextMap(Map<String, String> contextMap) {
+    /**
+     * Internal API: Sets the context from the map (clears the previous one and putAll).
+     * Used by wrappers for propagation. Do not call manually unless you know what you are doing.
+     */
+    public static void setContextMap(Map<String, String> contextMap) {
         CONTEXT.get().clear();
         if (contextMap != null && !contextMap.isEmpty()) {
             CONTEXT.get().putAll(contextMap);
         }
     }
 
-    static void clearThreadLocal() {
-        CONTEXT.remove(); // Prevent potential memory leaks
+    /**
+     * Internal API: Completely clears ThreadLocal (prevents memory leaks in virtual threads).
+     * Called by wrappers after task execution.
+     */
+    public static void clearThreadLocal() {
+        CONTEXT.remove();
     }
 
 }
