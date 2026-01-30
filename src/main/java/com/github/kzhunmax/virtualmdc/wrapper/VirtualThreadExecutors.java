@@ -22,14 +22,20 @@ public final class VirtualThreadExecutors {
     }
 
     /**
-     * Returns an ExecutorService with propagation
+     * Returns an ExecutorService that creates a new virtual thread for each task,
+     * with automatic MDC propagation.
+     *
+     * @return a new propagating ExecutorService
      */
     public static ExecutorService propagatingVirtualExecutor() {
         return new PropagatingExecutorService(Executors.newVirtualThreadPerTaskExecutor());
     }
 
     /**
-     * Decorator for any ExecutorService
+     * Decorates an existing ExecutorService with MDC propagation logic.
+     *
+     * @param delegate the underlying ExecutorService to wrap
+     * @return a wrapped ExecutorService that propagates MDC
      */
     public static ExecutorService decorate(ExecutorService delegate) {
         return new PropagatingExecutorService(delegate);

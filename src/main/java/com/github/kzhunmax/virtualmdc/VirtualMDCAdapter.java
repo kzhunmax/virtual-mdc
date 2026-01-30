@@ -13,6 +13,12 @@ import java.util.Map;
  */
 public class VirtualMDCAdapter implements MDCAdapter {
 
+    /**
+     * Default constructor required by SLF4J SPI.
+     */
+    public VirtualMDCAdapter() {
+    }
+
     @Override
     public void put(String key, String val) {
         VirtualMDC.put(key, val);

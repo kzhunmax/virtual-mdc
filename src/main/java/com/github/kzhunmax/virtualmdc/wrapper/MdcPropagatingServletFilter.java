@@ -11,11 +11,17 @@ import java.util.UUID;
 /**
  * Servlet filter for automatic MDC propagation in web applications.
  * <p>
- *     Captures MDC at request start, generates requestId if missing, restores/clears at end.
- *     Use in web.xml or @WebFilter. Ideal for Spring Boot / Jakarta EE apps with virtual threads.
+ * Captures MDC at request start, generates requestId if missing, restores/clears at end.
+ * Use in web.xml or @WebFilter. Ideal for Spring Boot / Jakarta EE apps with virtual threads.
  * </p>
  */
 public class MdcPropagatingServletFilter implements Filter {
+
+    /**
+     * Default constructor.
+     */
+    public MdcPropagatingServletFilter() {
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

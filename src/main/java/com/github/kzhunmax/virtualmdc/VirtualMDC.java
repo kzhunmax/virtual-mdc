@@ -28,6 +28,10 @@ public final class VirtualMDC {
 
     /**
      * Adds/updates values in the context of the current thread.
+     *
+     * @param key   the key context attribute
+     * @param value the value context attribute
+     * @throws IllegalArgumentException if key is null
      */
     public static void put(String key, String value) {
         if (key == null) {
@@ -42,6 +46,10 @@ public final class VirtualMDC {
 
     /**
      * Retrieves a value from the context or null if not present.
+     *
+     * @param key the key context attribute
+     * @return the value associated with the key, or null if not found
+     * @throws IllegalArgumentException if key is null
      */
     public static String get(String key) {
         if (key == null) {
@@ -51,6 +59,8 @@ public final class VirtualMDC {
     }
 
     /**
+     * Returns a copy of the current context map.
+     *
      * @return immutable copy of the current context map
      */
     public static Map<String, String> getCopyOfContextMap() {
@@ -66,7 +76,9 @@ public final class VirtualMDC {
     }
 
     /**
-     * Removes the key
+     * Removes the context value identified by the key.
+     *
+     * @param key the key context attribute to remove
      */
     public static void remove(String key) {
         if (key != null) {
@@ -77,6 +89,8 @@ public final class VirtualMDC {
     /**
      * Internal API: Sets the context from the map (clears the previous one and putAll).
      * Used by wrappers for propagation. Do not call manually unless you know what you are doing.
+     *
+     * @param contextMap the map to replace the current context
      */
     public static void setContextMap(Map<String, String> contextMap) {
         CONTEXT.get().clear();
@@ -95,6 +109,9 @@ public final class VirtualMDC {
 
     /**
      * Executes a task with the given context snapshot (internal for wrappers).
+     *
+     * @param task     the task to execute
+     * @param snapshot the context snapshot to apply during execution
      */
     public static void executeWithContext(Runnable task, Map<String, String> snapshot) {
         Map<String, String> previous = getCopyOfContextMap();
@@ -109,6 +126,14 @@ public final class VirtualMDC {
         }
     }
 
+    /**
+     * Executes a supplier with the given context snapshot (internal for wrappers).
+     *
+     * @param task     the supplier to execute
+     * @param snapshot the context snapshot to apply during execution
+     * @param <T>      the type of the result
+     * @return the result of the supplier
+     */
     public static <T> T executeWithContext(Supplier<T> task, Map<String, String> snapshot) {
         Map<String, String> previous = getCopyOfContextMap();
         try {
@@ -122,6 +147,15 @@ public final class VirtualMDC {
         }
     }
 
+    /**
+     * Executes a callable with the given context snapshot (internal for wrappers).
+     *
+     * @param task     the callable to execute
+     * @param snapshot the context snapshot to apply during execution
+     * @param <T>      the type of the result
+     * @return the result of the callable
+     * @throws Exception if the callable throws an exception
+     */
     public static <T> T executeWithContext(Callable<T> task, Map<String, String> snapshot) throws Exception {
         Map<String, String> previous = getCopyOfContextMap();
         try {
